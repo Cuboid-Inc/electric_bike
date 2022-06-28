@@ -24,7 +24,6 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
     updateFcm();
     super.initState();
   }
