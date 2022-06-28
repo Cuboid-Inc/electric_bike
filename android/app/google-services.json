@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1053105099313",
+    "firebase_url": "https://electric-bike0631-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "electric-bike0631",
+    "storage_bucket": "electric-bike0631.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1053105099313:android:e0fda832e8621fd7e8bb10",
+        "android_client_info": {
+          "package_name": "com.example.electric_bike"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1053105099313-qf5l4aab9elj78v8k9dr1i158un8h778.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDv9-o5kY0HIB_daL4Bl1rEJsMT-gFOof4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1053105099313-qf5l4aab9elj78v8k9dr1i158un8h778.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
