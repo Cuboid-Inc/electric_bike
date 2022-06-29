@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:electric_bike/home.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class MyCustomSplashScreen extends StatefulWidget {
   @override
@@ -16,9 +18,63 @@ class _MyCustomSplashScreenState extends State<MyCustomSplashScreen>
 
   AnimationController? _controller;
   Animation<double>? animation1;
+  Future<void> sendNotification(
+      {required String title,
+      required String body,
+      required String token}) async {
+    try {
+      await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization':
+              'key=AAAAmnk6J7E:APA91bF3HihVtLFrhRFcWg_2nN6x6gv9YZJqhYxrD2BMhQTGBaIQLN6yVzgKosyoAcLXcWuhTEmZwB1FF0T04IPTKKxmQBD_KA6k8O6TFQ_61CtdH-e8Gx0ARCZYhLymDC5ABSgd54jQ',
+        },
+        body: jsonEncode(
+          <String, dynamic>{
+            'notification': <String, dynamic>{
+              'title': '$title',
+              'body': '$body ',
+            },
+            'data': <String, dynamic>{
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+            },
+            'to': '$token',
+          },
+        ),
+      );
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<http.Response> createAlbum() {
+    return http
+        .post(
+      Uri.parse('https://jsonplaceholder.typicode.com/albums'),
+      headers: <String, String>{
+        'Content-Type': 'text/plain',
+      },
+      body: "sdsd",
+    )
+        .then((value) {
+      print(value.body);
+      return value;
+    });
+  }
+
+  Future<http.Response> fetchAlbum() {
+    return http
+        .get(Uri.parse('https://jsonplaceholder.typicode.com/albums/1'))
+        .then((value) {
+      print(value.body);
+      return value;
+    });
+  }
 
   @override
   void initState() {
+    createAlbum();
     super.initState();
 
     _controller =
