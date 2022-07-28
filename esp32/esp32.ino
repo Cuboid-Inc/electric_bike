@@ -31,29 +31,22 @@ void setup() {
   Firebase.setReadTimeout(firebaseData, 1000 * 60);
   Firebase.setwriteSizeLimit(firebaseData, "tiny");
 }
-bool notiSend = false;
+bool downNotification = true;
+bool upNotification = true;
 void loop() {
+     Firebase.getString(firebaseData, path + "/fcm");
+  String fcm = firebaseData.stringData();
   buttonState=digitalRead(button); 
 if (buttonState == 1){
-
+  
   Firebase.setString(firebaseData, path + "/status", "true");
  digitalWrite(relaypin, LOW);
  Serial.println("The Stand Is Up"); 
  delay(200);
- }
- if (buttonState==0){
-    notiSend = true;
-  Firebase.setString(firebaseData, path + "/status", "false");
- digitalWrite(relaypin, HIGH);
- Serial.println("The Stand Is Down"); 
- delay(200);
- } 
-   Firebase.getString(firebaseData, path + "/fcm");
-  String fcm = firebaseData.stringData();
-//  printResult(firebaseData , "fcm");
-if(buttonState==1&&notiSend){
-  notiSend = false;
-    String body = "{\"notification\":{\"title\":\"Warning\",\"body\":\"Stand Is UP!\"},\"to\":\""+fcm+"\"}";
+  if(upNotification){
+  downNotification = true;
+  upNotification = false;
+    String body = "{\"notification\":{\"title\":\"\",\"body\":\"Stand Is UP!\"},\"to\":\""+fcm+"\"}";
   
   RequestOptions options;
     options.method = "POST";
@@ -67,6 +60,34 @@ if(buttonState==1&&notiSend){
     Response response = fetch(serverName, options);
     Serial.println(response);
   }
+ }
+ if (buttonState==0){
+    
+  Firebase.setString(firebaseData, path + "/status", "false");
+ digitalWrite(relaypin, HIGH);
+ Serial.println("The Stand Is Down"); 
+ delay(200);
+ if(downNotification){
+  downNotification = false;
+  upNotification = true;
+    String body = "{\"notification\":{\"title\":\"WARNING\",\"body\":\"Stand Is Down!\"},\"to\":\""+fcm+"\"}";
+  
+  RequestOptions options;
+    options.method = "POST";
+    options.headers["Content-Type"] = "application/json";
+    options.headers["Content-Length"] = String(body.length());
+    options.headers["Authorization"] = "key=AAAA9TH0kjE:APA91bEdgulTpBSUMFqVwodcNjaE4JzOYHE9LQ8_fEz1umqdHnXaHm_ve5K1E3ymSljyrWP7SHdnS25-s6JGeCADM5viNVwMmFQUgj9Gp4aQretexIsea2fZZENp_W5PB_F_wwrm-XME";
+    options.body = body;
+    options.fingerprint = FINGERPRINT;
+
+    // Making the request.
+    Response response = fetch(serverName, options);
+    Serial.println(response);
+  }
+ } 
+
+//  printResult(firebaseData , "fcm");
+
   
   }
 
