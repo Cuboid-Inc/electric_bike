@@ -18,7 +18,7 @@ class _HomeState extends State<Home> {
   updateFcm() {
     FirebaseMessaging.instance.getToken().then((value) {
       databaseReference.child('').update({"fcm": "$value"});
-      databaseReference.child('').update({"status": "true"});
+      databaseReference.child('').update({"status": "false"});
     });
   }
 

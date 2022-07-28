@@ -1,6 +1,9 @@
 #include <FirebaseESP8266.h>
 #include <String.h>
 #include <ESP8266WiFi.h>
+#include "Fetch.h"
+
+#define FINGERPRINT "2C 0F 6B 84 9E 00 A5 72 F4 96 10 9E 72 19 E7 AF A0 B6 EF 3D"
 #define FIREBASE_HOST "electric-bike0631-default-rtdb.asia-southeast1.firebasedatabase.app"       // "YOUR FIREBASE HOST COPIED" //Do not include https:// in FIREBASE_HOST
 #define FIREBASE_AUTH "OEQQo6J2d1sskCPFMidbRvbiZW6weLrtzYpoxoAd"
 String path = "123";
@@ -9,6 +12,7 @@ FirebaseData firebaseData;
 int relaypin = 5; // D1(gpio5)
 int button = 4; //D2(gpio4)
 int buttonState=0;
+const char* serverName = "https://fcm.googleapis.com/fcm/send";
 void setup() {
   Serial.begin(115200);
     pinMode(relaypin, OUTPUT);
@@ -27,22 +31,42 @@ void setup() {
   Firebase.setReadTimeout(firebaseData, 1000 * 60);
   Firebase.setwriteSizeLimit(firebaseData, "tiny");
 }
+bool notiSend = false;
 void loop() {
   buttonState=digitalRead(button); 
 if (buttonState == 1){
+
   Firebase.setString(firebaseData, path + "/status", "true");
  digitalWrite(relaypin, LOW);
  Serial.println("The Stand Is Up"); 
  delay(200);
  }
  if (buttonState==0){
+    notiSend = true;
   Firebase.setString(firebaseData, path + "/status", "false");
  digitalWrite(relaypin, HIGH);
  Serial.println("The Stand Is Down"); 
  delay(200);
  } 
-  Firebase.getString(firebaseData, path + "/fcm");
-  printResult(firebaseData , "fcm");
+   Firebase.getString(firebaseData, path + "/fcm");
+  String fcm = firebaseData.stringData();
+//  printResult(firebaseData , "fcm");
+if(buttonState==1&&notiSend){
+  notiSend = false;
+    String body = "{\"notification\":{\"title\":\"Warning\",\"body\":\"Stand Is UP!\"},\"to\":\""+fcm+"\"}";
+  
+  RequestOptions options;
+    options.method = "POST";
+    options.headers["Content-Type"] = "application/json";
+    options.headers["Content-Length"] = String(body.length());
+    options.headers["Authorization"] = "key=AAAA9TH0kjE:APA91bEdgulTpBSUMFqVwodcNjaE4JzOYHE9LQ8_fEz1umqdHnXaHm_ve5K1E3ymSljyrWP7SHdnS25-s6JGeCADM5viNVwMmFQUgj9Gp4aQretexIsea2fZZENp_W5PB_F_wwrm-XME";
+    options.body = body;
+    options.fingerprint = FINGERPRINT;
+
+    // Making the request.
+    Response response = fetch(serverName, options);
+    Serial.println(response);
+  }
   
   }
 
